@@ -16,21 +16,11 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserProfile(@PathVariable int id) {
         User userProfile = service.getUserProfile(id);
-        if (userProfile != null)
-            return ResponseEntity.ok(userProfile);
+
+        if (userProfile != null) return ResponseEntity.ok(userProfile);
         else return ResponseEntity.notFound().build();
     }
 
-    @PostMapping
-    public ResponseEntity<String> addUser (@RequestBody User user) {
-        try {
-            User addedUser = service.addUser(user);
-            return ResponseEntity.status(201).body("Profile Updated");
-        }
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body("Something Went Wrong!");
-        }
-    }
     @GetMapping("/balance/{id}")
     public ResponseEntity<Double> getBalance(@PathVariable int id) {
         Double balance = service.getBalance(id);
