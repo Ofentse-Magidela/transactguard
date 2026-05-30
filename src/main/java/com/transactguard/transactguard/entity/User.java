@@ -2,12 +2,15 @@ package com.transactguard.transactguard.entity;
 
 import com.transactguard.transactguard.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.util.Date;
+import lombok.*;
 
-@Data
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -22,6 +25,16 @@ public class User {
     private double balance;
     private String password;
     private Role role;
-    private Date createdAt;
+    private LocalDate createdAt;
 
+    @OneToMany(mappedBy = "user")
+    private List<Transaction> transactions = new ArrayList<>();
+
+    public void setTransaction (Transaction transaction) {
+        this.transactions.add(transaction);
+
+        if (transaction != null) {
+            transaction.setUser(this);
+        }
+    }
 }

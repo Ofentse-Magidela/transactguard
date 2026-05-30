@@ -1,8 +1,12 @@
 package com.transactguard.transactguard.service;
+
+import com.transactguard.transactguard.Role;
 import com.transactguard.transactguard.entity.User;
 import com.transactguard.transactguard.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 public class UserService {
@@ -22,8 +26,9 @@ public class UserService {
         return repository.findById(id).orElse(null);
     }
 
-    public User addUser(User user) {
-        return repository.save(user);
+    public User getByUsername(String username) {
+        return repository.findByUsername(username).
+                orElse(null); // for practise
     }
 
     public Double getBalance(int id) {
