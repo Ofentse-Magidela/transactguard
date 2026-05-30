@@ -22,10 +22,11 @@ public class User {
 
     private String username;
     private String email;
-    private double balance;
+    private Double balance;
     private String password;
-    private Role role;
     private LocalDate createdAt;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<Transaction> transactions = new ArrayList<>();
