@@ -1,48 +1,58 @@
 package com.transactguard.transactguard.service;
 
+import com.transactguard.transactguard.TransactionStatus;
 import com.transactguard.transactguard.entity.Transaction;
 import com.transactguard.transactguard.entity.User;
 import com.transactguard.transactguard.repo.TransactionRepository;
+import com.transactguard.transactguard.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.util.Optional;
 
 @Service
 public class TransactionService {
     @Autowired
-    TransactionRepository repo;
+    TransactionRepository transactRepo;
 
     @Autowired
-    UserService service;
+    UserRepository userRepo;
 
     public Transaction getBalance() {
-        return repo.findById(1).orElse(null); //just testing for now
+        return transactRepo.findById(1).orElse(null); //just testing for now
     }
 
-    public Transaction sendMoney(String sender, String receiver, double amount) {
+    @Transactional
+    public Transaction sendMoney(String sender, String receiver, Double amount) {
+
         Transaction transaction = new Transaction();
+        User sender1;
+        User receiver1;
 
-        User sender1 = service.getByUsername(sender);
-        User receiver1 = service.getByUsername(receiver);
+        Optional<User> optionalSender = userRepo.findByUsername(sender);
+        Optional<User> optionalReceiver = userRepo.findByUsername(receiver);
 
-        if (sender1 == null || receiver1 == null) return null;// same here
-
+        if (optionalSender.isPresent() && optionalReceiver.isPresent()) {
+            sender1 = optionalSender.get();
+            receiver1 = optionalReceiver.get();
+        }
+        else return null;
 
         if (sender1.getBalance() >= amount) {
 
             sender1.setBalance(sender1.getBalance() - amount);
             receiver1.setBalance(receiver1.getBalance() + amount);
 
-            transaction.setStatus(true);
+            transaction.setStatus(TransactionStatus.SUCCESSFUL);
             transaction.setTimestamp(LocalTime.now());
 
             sender1.setTransaction(transaction);
             receiver1.setTransaction(transaction);
         }
         else {
-            transaction.setStatus(false);
+            transaction.setStatus(TransactionStatus.CANCELED);
             transaction.setTimestamp(LocalTime.now());
             sender1.setTransaction(transaction);
 
@@ -50,7 +60,6 @@ public class TransactionService {
         }
         transaction.setSender(sender);
         transaction.setReceiver(receiver);
-        repo.save(transaction);
 
         return transaction;
 

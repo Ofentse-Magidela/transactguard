@@ -1,12 +1,9 @@
 package com.transactguard.transactguard.service;
 
-import com.transactguard.transactguard.Role;
 import com.transactguard.transactguard.entity.User;
 import com.transactguard.transactguard.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 @Service
 public class UserService {
@@ -14,13 +11,13 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
-    public User updateUser(int id,User user) {
-        User updateUser = repository.findById(id).orElse(null);
-        if (updateUser != null) {
+    public User updateUser(int id, User user) {
+        User updatedUser = repository.findById(id).orElse(null);
+        if (updatedUser != null) {
             user.setId(id);
             repository.save(user);
         }
-        return updateUser;
+        return updatedUser;
     }
     public User getUserProfile(int id) {
         return repository.findById(id).orElse(null);

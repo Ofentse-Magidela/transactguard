@@ -1,5 +1,6 @@
 package com.transactguard.transactguard.entity;
 
+import com.transactguard.transactguard.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,8 +19,9 @@ public class Transaction {
 
     private String sender;
     private String receiver;
-    private double amount;
-    private Boolean status;
+    private Double amount;
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus status;
     private LocalTime timestamp;
 
     @ManyToOne
