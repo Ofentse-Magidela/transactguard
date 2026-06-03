@@ -9,59 +9,76 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class TransactionService {
+
     @Autowired
     TransactionRepository transactRepo;
 
     @Autowired
     UserRepository userRepo;
 
-    public Transaction getBalance() {
-        return transactRepo.findById(1).orElse(null); //just testing for now
-    }
-
     @Transactional
-    public Transaction sendMoney(String sender, String receiver, Double amount) {
+    public Transaction sendMoney(Long senderID, Long receiverID, Double amount) {
 
         Transaction transaction = new Transaction();
-        User sender1;
-        User receiver1;
 
-        Optional<User> optionalSender = userRepo.findByUsername(sender);
-        Optional<User> optionalReceiver = userRepo.findByUsername(receiver);
+        User sender;
+        User receiver;
+
+        Optional<User> optionalSender = userRepo.findById(senderID);
+        Optional<User> optionalReceiver = userRepo.findById(receiverID);
 
         if (optionalSender.isPresent() && optionalReceiver.isPresent()) {
-            sender1 = optionalSender.get();
-            receiver1 = optionalReceiver.get();
+            sender = optionalSender.get();
+            receiver = optionalReceiver.get();
         }
         else return null;
 
-        if (sender1.getBalance() >= amount) {
+        if (sender.getBalance() >= amount) {
 
-            sender1.setBalance(sender1.getBalance() - amount);
-            receiver1.setBalance(receiver1.getBalance() + amount);
+            sender.setBalance(sender.getBalance() - amount);
+            receiver.setBalance(receiver.getBalance() + amount);
 
+            transaction.setAmount(amount);
             transaction.setStatus(TransactionStatus.SUCCESSFUL);
-            transaction.setTimestamp(LocalTime.now());
+            transaction.setTimestamp(LocalDateTime.now());
 
-            sender1.setTransaction(transaction);
-            receiver1.setTransaction(transaction);
+            sender.setSenderTransactions(transaction);
+            receiver.setReceiverTransactions(transaction);
         }
         else {
+
+            transaction.setAmount(0.00);
             transaction.setStatus(TransactionStatus.CANCELED);
-            transaction.setTimestamp(LocalTime.now());
-            sender1.setTransaction(transaction);
+            transaction.setTimestamp(LocalDateTime.now());
+            sender.setSenderTransactions(transaction);
 
             return null;//practice purpose will handle if I see this approach is working
         }
         transaction.setSender(sender);
         transaction.setReceiver(receiver);
 
+        transactRepo.save(transaction);
         return transaction;
 
     }
+
+    public Transaction getTransactionById(Long id) {
+        Optional<Transaction> transaction = transactRepo.findById(id);
+        return transaction.orElse(null);
+    }
+
+    public List<Transaction> getSendTransactionHistory(Long id) {
+        return transactRepo.findAllBySenderId(id);
+    }
+    public List<Transaction> getReceivedTransactionHistory(Long id) {
+        return transactRepo.findAllByReceiverId(id);
+    }
 }
+
+

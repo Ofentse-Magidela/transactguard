@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SendMoneyRequest {
-    private String sender;
-    private String receiver;
+public class SendMoneyRequestDTO {
+    private Long senderID;
+    private Long receiverID;
     private Double amount;
 }
