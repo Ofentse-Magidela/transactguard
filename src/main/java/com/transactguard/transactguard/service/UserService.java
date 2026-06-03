@@ -11,7 +11,7 @@ public class UserService {
     @Autowired
     private UserRepository repository;
 
-    public User updateUser(int id, User user) {
+    public User updateUser(Long id, User user) {
         User updatedUser = repository.findById(id).orElse(null);
         if (updatedUser != null) {
             user.setId(id);
@@ -19,7 +19,8 @@ public class UserService {
         }
         return updatedUser;
     }
-    public User getUserProfile(int id) {
+
+    public User getUserProfile(Long id) {
         return repository.findById(id).orElse(null);
     }
 
@@ -28,7 +29,7 @@ public class UserService {
                 orElse(null); // for practise
     }
 
-    public Double getBalance(int id) {
+    public Double getBalance(Long id) {
         User user = repository.findById(id).orElse(null);
         if ( user != null) {
             return user.getBalance();

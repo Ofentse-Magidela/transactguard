@@ -14,7 +14,7 @@ public class UserController {
     UserService service;
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserProfile(@PathVariable int id) {
+    public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
         User userProfile = service.getUserProfile(id);
 
         if (userProfile != null) return ResponseEntity.ok(userProfile);
@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @GetMapping("/balance/{id}")
-    public ResponseEntity<Double> getBalance(@PathVariable int id) {
+    public ResponseEntity<Double> getBalance(@PathVariable Long id) {
         Double balance = service.getBalance(id);
         if (balance != null) {
             return ResponseEntity.ok(balance);
@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser (@RequestBody User user, @PathVariable int id) {
+    public ResponseEntity<String> updateUser (@RequestBody User user, @PathVariable Long id) {
         try {
             User updatedUser = service.updateUser(id, user);
             if ( updatedUser != null) return ResponseEntity.ok("Profile Updated");
