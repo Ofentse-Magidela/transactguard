@@ -3,7 +3,9 @@ package com.transactguard.transactguard.controller;
 import com.transactguard.transactguard.dto.SendMoneyRequestDTO;
 import com.transactguard.transactguard.entity.Transaction;
 import com.transactguard.transactguard.service.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,25 +18,35 @@ public class TransactionController {
     TransactionService service;
 
     @PostMapping("/send")
-    public String sendMoney(@RequestBody SendMoneyRequestDTO sendMoneyRequest) {
+    public ResponseEntity<String> sendMoney(@RequestBody @Valid SendMoneyRequestDTO sendMoneyRequest) {
         Transaction transaction = service.sendMoney(sendMoneyRequest.getSenderID(),
                                                     sendMoneyRequest.getReceiverID(),
                                                     sendMoneyRequest.getAmount());
-        if (transaction == null) return "Check if you have enough funds, or your id and sender id is correct";
-        else return "funds transferred successfully"; // again testing
+
+        if (transaction != null) return ResponseEntity.status(201).body("funds transferred successfully");
+        return ResponseEntity.badRequest().body("Check if you have enough funds, or your id and sender id is correct");
     }
 
     @GetMapping("/{id}")
-    public Transaction getTransactionById(@PathVariable Long id) {
-        return service.getTransactionById(id);
+    public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
+        Transaction t = service.getTransactionById(id);
+        if (t != null) return ResponseEntity.ok(t);
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("send/history/{id}")
-    public List<Transaction>  getTransactionHistory (@PathVariable Long id) {
-        return service.getSendTransactionHistory(id);
+    public ResponseEntity<List<Transaction>>  getTransactionHistory (@PathVariable Long id) {
+        List<Transaction> t = service.getSendTransactionHistory(id);
+
+        if (t != null) return ResponseEntity.ok(t);
+        return ResponseEntity.notFound().build();
     }
+
     @GetMapping("received/history/{id}")
-    public List<Transaction>  getReceivedTransactionHistory (@PathVariable Long id) {
-        return service.getReceivedTransactionHistory(id);
+    public ResponseEntity<List<Transaction>> getReceivedTransactionHistory (@PathVariable Long id) {
+        List<Transaction> t = service.getReceivedTransactionHistory(id);
+
+        if (t != null) return ResponseEntity.ok(t);
+        return ResponseEntity.notFound().build();
     }
 }
