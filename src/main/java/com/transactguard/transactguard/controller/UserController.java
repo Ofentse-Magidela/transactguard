@@ -1,7 +1,9 @@
 package com.transactguard.transactguard.controller;
 
+import com.transactguard.transactguard.dto.UpdateUserDTO;
 import com.transactguard.transactguard.entity.User;
 import com.transactguard.transactguard.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +33,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser (@RequestBody User user, @PathVariable Long id) {
+    public ResponseEntity<String> updateUser (@RequestBody @Valid UpdateUserDTO updateUserDTO, @PathVariable Long id) {
         try {
-            User updatedUser = service.updateUser(id, user);
+            User updatedUser = service.updateUser(updateUserDTO, id);
             if ( updatedUser != null) return ResponseEntity.ok("Profile Updated");
         }
         catch (Exception e) {

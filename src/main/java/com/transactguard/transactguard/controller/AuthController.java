@@ -1,6 +1,8 @@
 package com.transactguard.transactguard.controller;
 
+import com.transactguard.transactguard.dto.RegisterUserDTO;
 import com.transactguard.transactguard.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import com.transactguard.transactguard.entity.User;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +19,9 @@ public class AuthController {
     AuthService service;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser (@RequestBody User user) {
+    public ResponseEntity<String> registerUser (@RequestBody @Valid RegisterUserDTO registerUserDTO) {
         try {
-            User addedUser = service.registerUser(user);
+            User addedUser = service.registerUser(registerUserDTO);
             return ResponseEntity.status(201).body("Profile Updated");
         }
         catch (Exception e) {
