@@ -34,11 +34,6 @@ public class UserService {
         return repository.findById(id).orElse(null);
     }
 
-    public User getByUsername(String username) {
-        return repository.findByUsername(username).
-                orElse(null); // for practise
-    }
-
     public Double getBalance(Long id) {
         User user = repository.findById(id).orElse(null);
         if ( user != null) {

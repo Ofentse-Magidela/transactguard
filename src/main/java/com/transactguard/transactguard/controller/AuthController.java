@@ -1,5 +1,6 @@
 package com.transactguard.transactguard.controller;
 
+import com.transactguard.transactguard.dto.LoginUserDTO;
 import com.transactguard.transactguard.dto.RegisterUserDTO;
 import com.transactguard.transactguard.service.AuthService;
 import jakarta.validation.Valid;
@@ -16,16 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @Autowired
-    AuthService service;
+    private AuthService service;
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser (@RequestBody @Valid RegisterUserDTO registerUserDTO) {
         try {
             User addedUser = service.registerUser(registerUserDTO);
-            return ResponseEntity.status(201).body("Profile Updated");
+            return ResponseEntity.status(201).body("Account Created");
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body("Something Went Wrong!");
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser (@RequestBody @Valid LoginUserDTO loginUserDTO) {
+
+        if(service.loginUser(loginUserDTO) == null)
+            return ResponseEntity.status(201).body("Login Successful");
+        return ResponseEntity.badRequest().body("Something Went Wrong!");
     }
 }
