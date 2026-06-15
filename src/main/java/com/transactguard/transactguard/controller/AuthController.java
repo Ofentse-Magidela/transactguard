@@ -6,18 +6,16 @@ import com.transactguard.transactguard.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import com.transactguard.transactguard.entity.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthService service;
+    final private AuthService service;
+    public AuthController(AuthService service) {
+        this.service = service;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser (@RequestBody @Valid RegisterUserDTO registerUserDTO) {
@@ -32,9 +30,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser (@RequestBody @Valid LoginUserDTO loginUserDTO) {
-
-        if(service.loginUser(loginUserDTO) == null)
-            return ResponseEntity.status(201).body("Login Successful");
-        return ResponseEntity.badRequest().body("Something Went Wrong!");
+        String jwtToken = service.loginUser(loginUserDTO);
+        if(jwtToken == null) return ResponseEntity.badRequest().body("Something Went Wrong!");
+        return ResponseEntity.status(201).body("Login Successful " +  jwtToken);
     }
 }

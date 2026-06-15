@@ -14,8 +14,10 @@ import java.util.List;
 @RequestMapping("/transact")
 public class TransactionController {
 
-    @Autowired
-    TransactionService service;
+    final private TransactionService service;
+    public TransactionController(TransactionService service) {
+        this.service = service;
+    }
 
     @PostMapping("/send")
     public ResponseEntity<String> sendMoney(@RequestBody @Valid SendMoneyRequestDTO sendMoneyRequest) {

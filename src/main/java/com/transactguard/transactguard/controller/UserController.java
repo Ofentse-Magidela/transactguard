@@ -4,7 +4,6 @@ import com.transactguard.transactguard.dto.UpdateUserDTO;
 import com.transactguard.transactguard.entity.User;
 import com.transactguard.transactguard.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    UserService service;
+    final private UserService service;
+    public UserController(UserService service) {
+        this.service = service;
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
