@@ -3,7 +3,6 @@ package com.transactguard.transactguard.service;
 import com.transactguard.transactguard.dto.UpdateUserDTO;
 import com.transactguard.transactguard.entity.User;
 import com.transactguard.transactguard.repo.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -11,8 +10,11 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository repository;
+
+    final private UserRepository repository;
+    public UserService(UserRepository repository) {
+        this.repository = repository;
+    }
 
     public User updateUser(UpdateUserDTO updateUserDTO, Long id) {
         Optional<User> optionalUser = repository.findById(id);

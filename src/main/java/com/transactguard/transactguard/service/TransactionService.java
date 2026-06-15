@@ -5,7 +5,6 @@ import com.transactguard.transactguard.entity.Transaction;
 import com.transactguard.transactguard.entity.User;
 import com.transactguard.transactguard.repo.TransactionRepository;
 import com.transactguard.transactguard.repo.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +15,13 @@ import java.util.Optional;
 @Service
 public class TransactionService {
 
-    @Autowired
-    TransactionRepository transactRepo;
+    final private TransactionRepository transactRepo;
+    final private UserRepository userRepo;
 
-    @Autowired
-    UserRepository userRepo;
+    public TransactionService(TransactionRepository transactRepo, UserRepository userRepo) {
+        this.transactRepo = transactRepo;
+        this.userRepo = userRepo;
+    }
 
     @Transactional
     public Transaction sendMoney(Long senderID, Long receiverID, Double amount) {
