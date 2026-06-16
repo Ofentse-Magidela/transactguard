@@ -1,5 +1,6 @@
 package com.transactguard.transactguard.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Service;
 
@@ -24,4 +25,18 @@ public class JWTService {
                 .signWith(SECRET_KEY)
                 .compact();
     }
+
+    public String extractUserName(String token) {
+        Claims claimsMap = extractAllClaims(token);
+        return claimsMap.getSubject();
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(SECRET_KEY)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
 }
