@@ -41,6 +41,7 @@ public class Transaction {
     private User receiver;
 
     @OneToMany(mappedBy = "transaction")
+    @JsonIgnore
     private List<FraudFlag> fraudFlags = new ArrayList<>();
 
     public void addFraudFlag(FraudFlag fraudFlag) {
