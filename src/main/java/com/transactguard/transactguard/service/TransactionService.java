@@ -13,14 +13,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TransactionService {
+public class  TransactionService {
 
     final private TransactionRepository transactRepo;
     final private UserRepository userRepo;
+    final private FraudService fraudService;
 
-    public TransactionService(TransactionRepository transactRepo, UserRepository userRepo) {
+    public TransactionService(TransactionRepository transactRepo, UserRepository userRepo, FraudService fraudService) {
         this.transactRepo = transactRepo;
         this.userRepo = userRepo;
+        this.fraudService = fraudService;
     }
 
     @Transactional
@@ -33,38 +35,40 @@ public class TransactionService {
 
         Optional<User> optionalSender = userRepo.findById(senderID);
         Optional<User> optionalReceiver = userRepo.findById(receiverID);
-
         if (optionalSender.isPresent() && optionalReceiver.isPresent()) {
             sender = optionalSender.get();
             receiver = optionalReceiver.get();
         }
         else return null;
 
-        if (sender.getBalance() >= amount) {
-
-            sender.setBalance(sender.getBalance() - amount);
-            receiver.setBalance(receiver.getBalance() + amount);
-
-            transaction.setAmount(amount);
-            transaction.setStatus(TransactionStatus.SUCCESSFUL);
-            transaction.setTimestamp(LocalDateTime.now());
-
-            sender.setSenderTransactions(transaction);
-            receiver.setReceiverTransactions(transaction);
-        }
-        else {
+        if (sender.getBalance() < amount) {
 
             transaction.setAmount(0.00);
             transaction.setStatus(TransactionStatus.CANCELED);
+
             transaction.setTimestamp(LocalDateTime.now());
             sender.setSenderTransactions(transaction);
+            transaction.setSender(sender);
+            transaction.setReceiver(receiver);
 
             return null;//practice purpose will handle if I see this approach is working
         }
+
+        sender.setBalance(sender.getBalance() - amount);
+        receiver.setBalance(receiver.getBalance() + amount);
+
+        transaction.setAmount(amount);
+        transaction.setStatus(TransactionStatus.SUCCESSFUL);
+        transaction.setTimestamp(LocalDateTime.now());
+
+        sender.setSenderTransactions(transaction);
+        receiver.setReceiverTransactions(transaction);
+
         transaction.setSender(sender);
         transaction.setReceiver(receiver);
 
         transactRepo.save(transaction);
+        fraudService.checkFraud(transaction);
         return transaction;
 
     }

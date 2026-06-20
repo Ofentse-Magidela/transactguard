@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -18,7 +20,7 @@ public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private Double amount;
 
@@ -37,5 +39,14 @@ public class Transaction {
     @JoinColumn(name = "receiver_id")
     @JsonIgnore
     private User receiver;
+
+    @OneToMany(mappedBy = "transaction")
+    private List<FraudFlag> fraudFlags = new ArrayList<>();
+
+    public void addFraudFlag(FraudFlag fraudFlag) {
+        this.fraudFlags.add(fraudFlag);
+        if (fraudFlag != null)
+            fraudFlag.setTransaction(this);
+    }
 
 }
