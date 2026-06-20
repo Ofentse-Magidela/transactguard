@@ -5,10 +5,12 @@ import com.transactguard.transactguard.entity.User;
 import com.transactguard.transactguard.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
+@PreAuthorize("hasRole('USER')")
 public class UserController {
 
     final private UserService service;

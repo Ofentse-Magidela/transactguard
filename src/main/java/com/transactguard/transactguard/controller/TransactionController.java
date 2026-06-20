@@ -6,12 +6,14 @@ import com.transactguard.transactguard.service.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/transact")
+@PreAuthorize("hasRole('USER')")
 public class TransactionController {
 
     final private TransactionService service;
