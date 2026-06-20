@@ -25,10 +25,10 @@ public class AdminController {
     }
 
 
-    @PostMapping("/resolve/{id}")
+    @PutMapping("/resolve/{id}")
     public ResponseEntity<String> resolveFlags(@PathVariable Long id) {
-        boolean isResolved = service.resolveFlag(id);
-        if (isResolved) return ResponseEntity.status(201).body("SUCCESS");
-        return ResponseEntity.notFound().build();
+        service.resolveFlag(id);
+        return ResponseEntity.status(200).body("Fraud Flag Resolved Successfully");
+
     }
 }

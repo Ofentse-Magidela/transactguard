@@ -5,7 +5,6 @@ import com.transactguard.transactguard.repo.FraudRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AdminService {
@@ -19,17 +18,12 @@ public class AdminService {
         return repository.findAllByResolved(false);
     }
 
-    public boolean resolveFlag(Long id) {
+    public void resolveFlag(Long id) {
 
-        Optional<FraudFlag> fraudFlagOptional = repository.findById(id);
-        if(fraudFlagOptional.isPresent()) {
+        FraudFlag fraudFlag = repository.findById(id).orElseThrow(() ->
+                new RuntimeException("FraudFlag with ID " + id + " not found."));
 
-            FraudFlag fraudFlag = fraudFlagOptional.get();
-            fraudFlag.setResolved(true);
-            repository.save(fraudFlag);
-
-            return true;
-        }
-        return false;
+        fraudFlag.setResolved(true);
+        repository.save(fraudFlag);
     }
 }

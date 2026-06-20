@@ -19,19 +19,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser (@RequestBody @Valid RegisterUserDTO registerUserDTO) {
-        try {
-            User addedUser = service.registerUser(registerUserDTO);
-            return ResponseEntity.status(201).body("Account Created");
-        }
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body("Something Went Wrong!");
-        }
+        service.registerUser(registerUserDTO);
+        return ResponseEntity.status(201).body("Account Created");
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser (@RequestBody @Valid LoginUserDTO loginUserDTO) {
         String jwtToken = service.loginUser(loginUserDTO);
-        if(jwtToken == null) return ResponseEntity.badRequest().body("Something Went Wrong!");
-        return ResponseEntity.status(201).body("Login Successful " +  jwtToken);
+        return ResponseEntity.status(200).body("Login Successful " +  jwtToken);
     }
 }

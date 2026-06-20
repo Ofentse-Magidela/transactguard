@@ -27,30 +27,27 @@ public class TransactionController {
                                                     sendMoneyRequest.getReceiverID(),
                                                     sendMoneyRequest.getAmount());
 
-        if (transaction != null) return ResponseEntity.status(201).body("funds transferred successfully");
-        return ResponseEntity.badRequest().body("Check if you have enough funds, or your id and sender id is correct");
+        return ResponseEntity.status(201).body("Transaction Successful");
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
-        Transaction t = service.getTransactionById(id);
-        if (t != null) return ResponseEntity.ok(t);
-        return ResponseEntity.notFound().build();
+        Transaction transaction = service.getTransactionById(id);
+        return ResponseEntity.ok(transaction);
     }
 
     @GetMapping("send/history/{id}")
     public ResponseEntity<List<Transaction>>  getTransactionHistory (@PathVariable Long id) {
-        List<Transaction> t = service.getSendTransactionHistory(id);
 
-        if (t != null) return ResponseEntity.ok(t);
-        return ResponseEntity.notFound().build();
+        List<Transaction> transactionHistory = service.getSendTransactionHistory(id);
+        return ResponseEntity.ok(transactionHistory);
     }
 
     @GetMapping("received/history/{id}")
     public ResponseEntity<List<Transaction>> getReceivedTransactionHistory (@PathVariable Long id) {
-        List<Transaction> t = service.getReceivedTransactionHistory(id);
 
-        if (t != null) return ResponseEntity.ok(t);
-        return ResponseEntity.notFound().build();
+        List<Transaction> transactionList = service.getReceivedTransactionHistory(id);
+        return ResponseEntity.ok(transactionList);
+
     }
 }
