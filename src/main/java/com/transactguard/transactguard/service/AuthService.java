@@ -51,7 +51,6 @@ public class AuthService {
         if (user.getRole() == null) user.setRole(Role.USER);
         else user.setRole(Role.ADMIN);
 
-
         return repository.save(user);
     }
 

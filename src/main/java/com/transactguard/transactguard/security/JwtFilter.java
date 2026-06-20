@@ -1,6 +1,5 @@
 package com.transactguard.transactguard.security;
 
-import com.transactguard.transactguard.entity.UserPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
