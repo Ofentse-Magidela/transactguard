@@ -28,22 +28,18 @@ public class  TransactionService {
     @Transactional
     public Transaction sendMoney(Long senderID, Long receiverID, Double amount) {
 
+        if (senderID.equals(receiverID)) throw new RuntimeException("Cannot send money to yourself");
+
         Transaction transaction = new Transaction();
 
-        User sender;
-        User receiver;
-
-        Optional<User> optionalSender = userRepo.findById(senderID);
-        Optional<User> optionalReceiver = userRepo.findById(receiverID);
-        if (optionalSender.isPresent() && optionalReceiver.isPresent()) {
-            sender = optionalSender.get();
-            receiver = optionalReceiver.get();
-        }
-        else return null;
+        User sender = userRepo.findById(senderID).orElseThrow(() ->
+                new RuntimeException("Profile with ID " + senderID + " not found."));
+        User receiver = userRepo.findById(receiverID).orElseThrow(() ->
+                new RuntimeException("Profile with ID " + receiverID + " not found."));
 
         if (sender.getBalance() < amount) {
 
-            transaction.setAmount(0.00);
+            transaction.setAmount(-amount);
             transaction.setStatus(TransactionStatus.CANCELED);
 
             transaction.setTimestamp(LocalDateTime.now());
@@ -51,7 +47,10 @@ public class  TransactionService {
             transaction.setSender(sender);
             transaction.setReceiver(receiver);
 
-            return null;//practice purpose will handle if I see this approach is working
+            transactRepo.save(transaction);
+            fraudService.checkFraud(transaction);
+
+            return transaction;
         }
 
         sender.setBalance(sender.getBalance() - amount);
@@ -74,8 +73,8 @@ public class  TransactionService {
     }
 
     public Transaction getTransactionById(Long id) {
-        Optional<Transaction> transaction = transactRepo.findById(id);
-        return transaction.orElse(null);
+        return transactRepo.findById(id).orElseThrow(() ->
+                new RuntimeException("Transaction with ID " + id + " not found."));
     }
 
     public List<Transaction> getSendTransactionHistory(Long id) {

@@ -20,30 +20,23 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
-        User userProfile = service.getUserProfile(id);
 
-        if (userProfile != null) return ResponseEntity.ok(userProfile);
-        else return ResponseEntity.notFound().build();
+        User userProfile = service.getUserProfile(id);
+        return ResponseEntity.ok(userProfile);
     }
 
     @GetMapping("/balance/{id}")
     public ResponseEntity<Double> getBalance(@PathVariable Long id) {
+
         Double balance = service.getBalance(id);
-        if (balance != null) {
-            return ResponseEntity.ok(balance);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(balance);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<String> updateUser (@RequestBody @Valid UpdateUserDTO updateUserDTO, @PathVariable Long id) {
-        try {
-            User updatedUser = service.updateUser(updateUserDTO, id);
-            if ( updatedUser != null) return ResponseEntity.ok("Profile Updated");
-        }
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body("Something Went Wrong!");
-        }
-        return ResponseEntity.notFound().build();
+
+        User updatedUser = service.updateUser(updateUserDTO, id);
+        return ResponseEntity.ok("Profile Updated " + updatedUser);
+
     }
 }

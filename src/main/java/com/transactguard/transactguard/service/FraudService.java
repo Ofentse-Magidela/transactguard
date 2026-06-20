@@ -24,12 +24,14 @@ public class FraudService {
         User user = transaction.getSender();
         Double userBalance = user.getBalance();
 
+        Double amount = Math.abs(transaction.getAmount());
+
         LocalDateTime oneMinBefore = transaction.getTimestamp().minusMinutes(1);
         List<Transaction> recentTransactions = transactionRepo.findAllBySenderIdAndTimestampAfter(
                 transaction.getSender().getId(),
                 oneMinBefore
         );
-        if (transaction.getAmount() > 10000.00) checkLargeAmount(transaction);
+        if (amount > 10000.00) checkLargeAmount(transaction);
         if (userBalance <= 1000 && (transaction.getAmount() / userBalance) * 100 > 70) highBalancedDrain(transaction);
         if (recentTransactions.size() >= 3) rapidTransactions(transaction);
     }

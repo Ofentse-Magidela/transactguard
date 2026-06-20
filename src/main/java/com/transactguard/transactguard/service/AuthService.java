@@ -37,7 +37,7 @@ public class AuthService {
         this.auth = auth;
     }
 
-    public User registerUser(RegisterUserDTO registerUserDTO) {
+    public void registerUser(RegisterUserDTO registerUserDTO) {
 
         User user = new User();
 
@@ -51,7 +51,7 @@ public class AuthService {
         if (user.getRole() == null) user.setRole(Role.USER);
         else user.setRole(Role.ADMIN);
 
-        return repository.save(user);
+        repository.save(user);
     }
 
     public String loginUser(LoginUserDTO loginUserDTO) {
@@ -65,13 +65,13 @@ public class AuthService {
 
         if(authentication.isAuthenticated()) {
 
+            List<String> roles = new ArrayList<>();
             for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
-                List<String> roles = new ArrayList<>();
                 roles.add(grantedAuthority.getAuthority());
-                extraClaims.put("roles", roles);
             }
+            extraClaims.put("roles", roles);
             return jwtService.generateToken(extraClaims, loginUserDTO.getUsername());
         }
-        return null;
+        throw new RuntimeException("Username Or Password is Incorrect");
     }
 }
