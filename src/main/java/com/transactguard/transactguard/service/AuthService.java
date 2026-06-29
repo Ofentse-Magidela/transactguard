@@ -4,6 +4,7 @@ import com.transactguard.transactguard.Role;
 import com.transactguard.transactguard.dto.LoginUserDTO;
 import com.transactguard.transactguard.dto.RegisterUserDTO;
 import com.transactguard.transactguard.entity.User;
+import com.transactguard.transactguard.entity.UserPrincipal;
 import com.transactguard.transactguard.repo.UserRepository;
 import com.transactguard.transactguard.security.JWTService;
 import org.springframework.security.core.Authentication;
@@ -64,6 +65,10 @@ public class AuthService {
         Authentication authentication = auth.authenticate(token);
 
         if(authentication.isAuthenticated()) {
+
+
+            UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+            extraClaims.put("userId", principal.getId());
 
             List<String> roles = new ArrayList<>();
             for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
