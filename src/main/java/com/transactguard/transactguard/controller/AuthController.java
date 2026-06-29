@@ -5,7 +5,6 @@ import com.transactguard.transactguard.dto.RegisterUserDTO;
 import com.transactguard.transactguard.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import com.transactguard.transactguard.entity.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,6 +25,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> loginUser (@RequestBody @Valid LoginUserDTO loginUserDTO) {
         String jwtToken = service.loginUser(loginUserDTO);
-        return ResponseEntity.status(200).body("Login Successful " +  jwtToken);
+        return ResponseEntity.status(200).body(jwtToken);
     }
 }
