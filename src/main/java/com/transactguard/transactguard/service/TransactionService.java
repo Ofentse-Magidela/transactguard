@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -80,9 +82,19 @@ public class  TransactionService {
     public List<Transaction> getSendTransactionHistory(Long id) {
         return transactRepo.findAllBySenderId(id);
     }
+
     public List<Transaction> getReceivedTransactionHistory(Long id) {
         return transactRepo.findAllByReceiverId(id);
     }
+
+    public Map<String, List<Transaction>> getTransactionHistory(Long id) {
+        Map<String, List<Transaction>> history = new HashMap<>();
+        history.put("sent", getSendTransactionHistory(id));
+        history.put("received", getReceivedTransactionHistory(id));
+        return history;
+    }
+
+
 }
 
 
