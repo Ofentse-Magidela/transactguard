@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/transact")
@@ -37,7 +38,7 @@ public class TransactionController {
     }
 
     @GetMapping("send/history/{id}")
-    public ResponseEntity<List<Transaction>>  getTransactionHistory (@PathVariable Long id) {
+    public ResponseEntity<List<Transaction>> getSendTransactionHistory (@PathVariable Long id) {
 
         List<Transaction> transactionHistory = service.getSendTransactionHistory(id);
         return ResponseEntity.ok(transactionHistory);
@@ -48,6 +49,10 @@ public class TransactionController {
 
         List<Transaction> transactionList = service.getReceivedTransactionHistory(id);
         return ResponseEntity.ok(transactionList);
+    }
 
+    @GetMapping("/history/{id}")
+    public ResponseEntity<Map<String, List<Transaction>>> getTransactionHistory(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getTransactionHistory(id));
     }
 }
