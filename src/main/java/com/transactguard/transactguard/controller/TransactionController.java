@@ -4,7 +4,6 @@ import com.transactguard.transactguard.dto.SendMoneyRequestDTO;
 import com.transactguard.transactguard.entity.Transaction;
 import com.transactguard.transactguard.service.TransactionService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/transact")
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('USER', 'ADMIN')")
 public class TransactionController {
 
     final private TransactionService service;
@@ -27,7 +26,6 @@ public class TransactionController {
         Transaction transaction = service.sendMoney(sendMoneyRequest.getSenderID(),
                                                     sendMoneyRequest.getReceiverID(),
                                                     sendMoneyRequest.getAmount());
-
         return ResponseEntity.status(201).body("Transaction Successful");
     }
 
