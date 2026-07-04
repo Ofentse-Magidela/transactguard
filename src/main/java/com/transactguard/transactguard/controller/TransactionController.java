@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/transact")
-@PreAuthorize("hasRole('USER', 'ADMIN')")
+@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class TransactionController {
 
     final private TransactionService service;
