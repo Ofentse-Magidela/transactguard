@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@PreAuthorize("hasRole('USER', 'ADMIN')")
+@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class UserController {
 
     final private UserService service;
