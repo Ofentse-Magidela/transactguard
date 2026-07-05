@@ -41,7 +41,7 @@ public class SecurityConfiguration {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(customizer -> customizer
-                        .requestMatchers("/h2-console/**","/auth/**")
+                        .requestMatchers("/auth/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .headers(headers ->
