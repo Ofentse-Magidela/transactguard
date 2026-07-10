@@ -93,6 +93,7 @@
 	</dependencies>
 
 	<build>
+        <finalName>transact-guard</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

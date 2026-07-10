@@ -1,0 +1,26 @@
+services:
+
+  transact-db:
+    image: postgres:16-alpine
+    container_name: transact-postgres-container
+    environment:
+      POSTGRES_DB: transactguard
+      POSTGRES_USER: ofentse
+      POSTGRES_PASSWORD: Ofentse
+    ports:
+      - "5432:5432"
+    volumes:
+      - transact_db_data:/var/lib/postgresql/data
+
+  transact-app:
+    build: .
+    container_name: transact-guard-container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://transact-db:5432/transactguard
+      SPRING_DATASOURCE_USERNAME: ofentse
+      SPRING_DATASOURCE_PASSWORD: Ofentse
+    ports:
+      - "8080:8080"
+
+volumes:
+  transact_db_data:
