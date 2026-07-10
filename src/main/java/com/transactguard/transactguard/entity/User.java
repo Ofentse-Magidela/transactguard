@@ -1,6 +1,5 @@
 package com.transactguard.transactguard.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.transactguard.transactguard.Role;
 import jakarta.persistence.*;
 import lombok.*;
