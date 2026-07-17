@@ -2,6 +2,9 @@ package com.transactguard.transactguard.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -10,7 +13,13 @@ import java.util.Map;
 
 @Service
 public class JWTService {
-    private final SecretKey SECRET_KEY = Jwts.SIG.HS256.key().build();
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
+
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(Map<String, Object> extraClaims, String username) {
 
@@ -22,7 +31,7 @@ public class JWTService {
                 .subject(username)
                 .issuedAt(new Date())
                 .expiration(TOKEN_EXPIRATION)
-                .signWith(SECRET_KEY)
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -33,7 +42,7 @@ public class JWTService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith(SECRET_KEY)
+                .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
