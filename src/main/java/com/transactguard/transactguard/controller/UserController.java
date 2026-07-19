@@ -36,7 +36,7 @@ public class UserController {
     public ResponseEntity<String> updateUser (@RequestBody @Valid UpdateUserDTO updateUserDTO, @PathVariable Long id) {
 
         User updatedUser = service.updateUser(updateUserDTO, id);
-        return ResponseEntity.ok("Profile Updated " + updatedUser);
+        return ResponseEntity.ok("Profile Updated ");
 
     }
 }

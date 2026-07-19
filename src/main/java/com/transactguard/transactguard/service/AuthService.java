@@ -8,17 +8,13 @@ import com.transactguard.transactguard.entity.UserPrincipal;
 import com.transactguard.transactguard.repo.UserRepository;
 import com.transactguard.transactguard.security.JWTService;
 import org.springframework.security.core.Authentication;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AuthService {
@@ -42,6 +38,9 @@ public class AuthService {
 
         User user = new User();
 
+        Optional<User> existEmail = repository.findByEmail(registerUserDTO.getEmail());
+        if (existEmail.isPresent()) throw new RuntimeException("Email already exist");
+
         String hashedPassword = encoder.encode(registerUserDTO.getPassword());
         user.setUsername(registerUserDTO.getUsername());
         user.setPassword(hashedPassword);
@@ -60,12 +59,11 @@ public class AuthService {
         Map<String, Object> extraClaims = new HashMap<>();
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                loginUserDTO.getUsername(),
+                loginUserDTO.getEmail(),
                 loginUserDTO.getPassword());
         Authentication authentication = auth.authenticate(token);
 
         if(authentication.isAuthenticated()) {
-
 
             UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
             extraClaims.put("userId", principal.getId());
@@ -75,8 +73,8 @@ public class AuthService {
                 roles.add(grantedAuthority.getAuthority());
             }
             extraClaims.put("roles", roles);
-            return jwtService.generateToken(extraClaims, loginUserDTO.getUsername());
+            return jwtService.generateToken(extraClaims, principal.getEmail());
         }
-        throw new RuntimeException("Username Or Password is Incorrect");
+        throw new RuntimeException("Email Or Password is Incorrect");
     }
 }
