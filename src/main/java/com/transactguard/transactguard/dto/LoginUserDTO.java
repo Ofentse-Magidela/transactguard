@@ -1,5 +1,6 @@
 package com.transactguard.transactguard.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,8 +12,9 @@ import lombok.Setter;
 public class LoginUserDTO {
 
     @NotBlank
-    @Size(min = 6, max = 26, message = "Username Must Be Between 6 - 26 Characters")
-    private String username;
+    @Email(message = "Invalid Email. Please Provide A Valid Email Format")
+    @Size(min = 6, max = 256, message = "Email Must Be A Minimum Of 8 Characters And 256 Max")
+    private String email;
 
     @NotBlank
     @Size(min = 12, max = 26, message = "Password Must Be Between 12 - 26 Characters")

@@ -7,11 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateUserDTO {
-    @NotBlank
+
     @Size(min = 6, max = 26, message = "Username Must Be Between 6 - 26 Characters")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Username must contain only alphabetic characters (no spaces or numbers)")
     private String username;
 
-    @NotBlank(message = "Email Cannot Be Blank")
+    @Pattern(regexp = "^\\S+$", message = "Email cannot contain spaces")
     @Email(message = "Invalid Email. Please Provide A Valid Email Format")
     @Size(min = 6, max = 256, message = "Email Must Be A Minimum Of 8 Characters And 256 Max")
     private String email;

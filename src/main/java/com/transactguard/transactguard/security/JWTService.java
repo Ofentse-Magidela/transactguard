@@ -21,21 +21,21 @@ public class JWTService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, String username) {
+    public String generateToken(Map<String, Object> extraClaims, String email) {
 
         long EXPIRATION_TIME = 1000 * 60 * 60;
         Date TOKEN_EXPIRATION = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
 
         return Jwts.builder()
                 .claims(extraClaims)
-                .subject(username)
+                .subject(email)
                 .issuedAt(new Date())
                 .expiration(TOKEN_EXPIRATION)
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String extractUserName(String token) {
+    public String extractEmail(String token) {
         Claims claimsMap = extractAllClaims(token);
         return claimsMap.getSubject();
     }

@@ -35,7 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
         String jwtToken;
-        String username;
+        String email;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -43,17 +43,17 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         jwtToken = authHeader.substring(7);
-        username = jwtService.extractUserName(jwtToken);
+        email = jwtService.extractEmail(jwtToken);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities()
             );
 
             //Tie request metadata (like the user's IP address) to our security badge
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
