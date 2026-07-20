@@ -11,7 +11,6 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-
     final private UserRepository repository;
     final private BCryptPasswordEncoder encoder;
     public UserService(UserRepository repository, BCryptPasswordEncoder encoder) {
@@ -23,20 +22,26 @@ public class UserService {
         User user = repository.findById(id).orElseThrow(() ->
                 new RuntimeException("Profile with ID " + id + " not found."));
 
-        if (updateUserDTO.getUsername() != null && !updateUserDTO.getUsername().equals(user.getUsername()))
+        if (updateUserDTO.getUsername() != null) {
+            if (updateUserDTO.getUsername().equals(user.getUsername()))
+                throw new RuntimeException("New username must be different from your current username.");
             user.setUsername(updateUserDTO.getUsername());
-        else throw new RuntimeException("Username must not be the same or empty");
-        if (updateUserDTO.getPassword() != null) user.setPassword(encoder.encode(updateUserDTO.getPassword()));
+        }
+
+        if (updateUserDTO.getPassword() != null) {
+            if (encoder.matches(updateUserDTO.getPassword(), user.getPassword()))
+                throw new RuntimeException("New password must be different from your current password.");
+            user.setPassword(encoder.encode(updateUserDTO.getPassword()));
+        }
 
         if (updateUserDTO.getEmail() != null) {
-
-            if (user.getEmail().equals(updateUserDTO.getEmail())) throw new RuntimeException("Enter a different email");
+            if (user.getEmail().equals(updateUserDTO.getEmail()))
+                throw new RuntimeException("New email must be different from your current email.");
             Optional<User> existEmail = repository.findByEmail(updateUserDTO.getEmail());
 
             if (existEmail.isEmpty()) user.setEmail(updateUserDTO.getEmail());
-            else throw new RuntimeException("Email already exist");
+            else throw new RuntimeException("Email is already in use.");
         }
-
         return repository.save(user);
     }
 
