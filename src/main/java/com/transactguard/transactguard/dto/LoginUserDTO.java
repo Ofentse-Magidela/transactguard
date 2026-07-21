@@ -11,12 +11,12 @@ import lombok.Setter;
 @Setter
 public class LoginUserDTO {
 
-    @NotBlank
+    @NotBlank(message = "Username cannot be blank")
     @Email(message = "Invalid Email. Please Provide A Valid Email Format")
     @Size(min = 6, max = 256, message = "Email Must Be A Minimum Of 8 Characters And 256 Max")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Password cannot be blank")
     @Size(min = 12, max = 26, message = "Password Must Be Between 12 - 26 Characters")
     @Pattern(
             regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\",./<>?])\\S*$",

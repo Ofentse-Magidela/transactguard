@@ -2,6 +2,7 @@ package com.transactguard.transactguard.service;
 
 import com.transactguard.transactguard.dto.UpdateUserDTO;
 import com.transactguard.transactguard.entity.User;
+import com.transactguard.transactguard.exception.RequestException;
 import com.transactguard.transactguard.repo.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,23 +25,31 @@ public class UserService {
 
         if (updateUserDTO.getUsername() != null) {
             if (updateUserDTO.getUsername().equals(user.getUsername()))
-                throw new RuntimeException("New username must be different from your current username.");
+                throw new RequestException(
+                        "username",
+                        "New username must be different from your current username.");
             user.setUsername(updateUserDTO.getUsername());
         }
 
         if (updateUserDTO.getPassword() != null) {
             if (encoder.matches(updateUserDTO.getPassword(), user.getPassword()))
-                throw new RuntimeException("New password must be different from your current password.");
+                throw new RequestException(
+                        "password",
+                        "New password must be different from your current password.");
             user.setPassword(encoder.encode(updateUserDTO.getPassword()));
         }
 
         if (updateUserDTO.getEmail() != null) {
             if (user.getEmail().equals(updateUserDTO.getEmail()))
-                throw new RuntimeException("New email must be different from your current email.");
+                throw new RequestException(
+                        "email",
+                        "New email must be different from your current email.");
             Optional<User> existEmail = repository.findByEmail(updateUserDTO.getEmail());
 
             if (existEmail.isEmpty()) user.setEmail(updateUserDTO.getEmail());
-            else throw new RuntimeException("Email is already in use.");
+            else throw new RequestException(
+                    "email",
+                    "Email is already in use.");
         }
         return repository.save(user);
     }

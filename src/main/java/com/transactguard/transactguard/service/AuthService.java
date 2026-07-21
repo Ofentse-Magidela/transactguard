@@ -5,8 +5,10 @@ import com.transactguard.transactguard.dto.LoginUserDTO;
 import com.transactguard.transactguard.dto.RegisterUserDTO;
 import com.transactguard.transactguard.entity.User;
 import com.transactguard.transactguard.entity.UserPrincipal;
+import com.transactguard.transactguard.exception.RequestException;
 import com.transactguard.transactguard.repo.UserRepository;
 import com.transactguard.transactguard.security.JWTService;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +41,7 @@ public class AuthService {
         User user = new User();
 
         Optional<User> existEmail = repository.findByEmail(registerUserDTO.getEmail());
-        if (existEmail.isPresent()) throw new RuntimeException("Email already exist");
+        if (existEmail.isPresent()) throw new RequestException("email", "Email already exist");
 
         String hashedPassword = encoder.encode(registerUserDTO.getPassword());
         user.setUsername(registerUserDTO.getUsername());
@@ -56,14 +58,14 @@ public class AuthService {
 
     public String loginUser(LoginUserDTO loginUserDTO) {
 
+
         Map<String, Object> extraClaims = new HashMap<>();
+        try {
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                    loginUserDTO.getEmail(),
+                    loginUserDTO.getPassword());
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                loginUserDTO.getEmail(),
-                loginUserDTO.getPassword());
-        Authentication authentication = auth.authenticate(token);
-
-        if(authentication.isAuthenticated()) {
+            Authentication authentication = auth.authenticate(token);
 
             UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
             extraClaims.put("userId", principal.getId());
@@ -72,9 +74,13 @@ public class AuthService {
             for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
                 roles.add(grantedAuthority.getAuthority());
             }
+
             extraClaims.put("roles", roles);
+
             return jwtService.generateToken(extraClaims, principal.getEmail());
+
+        } catch (BadCredentialsException e) {
+            throw new RequestException("form", "Email or password is incorrect");
         }
-        throw new RuntimeException("Email Or Password is Incorrect");
     }
 }
