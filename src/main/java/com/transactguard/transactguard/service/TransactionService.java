@@ -31,14 +31,16 @@ public class  TransactionService {
     @Transactional
     public Transaction sendMoney(Long senderID, Long receiverID, Double amount) {
 
-        if (senderID.equals(receiverID)) throw new RequestException("receiverID","Cannot send money to yourself");
+        if (senderID.equals(receiverID)) throw new RequestException("receiverID", "Cannot send money to yourself");
 
         Transaction transaction = new Transaction();
 
         User sender = userRepo.findById(senderID).orElseThrow(() ->
                 new RuntimeException("Profile with ID " + senderID + " not found."));
         User receiver = userRepo.findById(receiverID).orElseThrow(() ->
-                new RuntimeException("Profile with ID " + receiverID + " not found."));
+                new RequestException(
+                        "receiverID",
+                        "Recipient account not found. Please check the recipient ID and try again."));
 
         if (sender.getBalance() < amount) {
 
