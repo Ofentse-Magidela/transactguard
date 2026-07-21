@@ -3,6 +3,7 @@ package com.transactguard.transactguard.service;
 import com.transactguard.transactguard.TransactionStatus;
 import com.transactguard.transactguard.entity.Transaction;
 import com.transactguard.transactguard.entity.User;
+import com.transactguard.transactguard.exception.RequestException;
 import com.transactguard.transactguard.repo.TransactionRepository;
 import com.transactguard.transactguard.repo.UserRepository;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class  TransactionService {
     @Transactional
     public Transaction sendMoney(Long senderID, Long receiverID, Double amount) {
 
-        if (senderID.equals(receiverID)) throw new RuntimeException("Cannot send money to yourself");
+        if (senderID.equals(receiverID)) throw new RequestException("receiverID","Cannot send money to yourself");
 
         Transaction transaction = new Transaction();
 
@@ -52,7 +53,7 @@ public class  TransactionService {
             transactRepo.save(transaction);
             fraudService.checkFraud(transaction);
 
-            return transaction;
+            throw new RequestException("amount", "Insufficient funds.");
         }
 
         sender.setBalance(sender.getBalance() - amount);

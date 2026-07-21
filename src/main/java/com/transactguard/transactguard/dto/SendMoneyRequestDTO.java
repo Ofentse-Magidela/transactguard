@@ -10,15 +10,15 @@ import jakarta.validation.constraints.NotNull;
 @Setter
 public class SendMoneyRequestDTO {
 
-    @NotNull
+    @NotNull(message = "Sender ID is required.")
     @Min(value = 1, message = "Id Need To Be Equals Or Greater Than One")
     private Long senderID;
 
-    @NotNull
-    @Min(value = 1, message = "Id Need To Be  Or Greater Than One")
+    @NotNull(message = "Recipient ID is required.")
+    @Min(value = 1, message = "Enter a valid ID")
     private Long receiverID;
 
-    @NotNull
-    @DecimalMin(value = "1.00", message = "Money To Be Send Needs To Be 1.00 ZAR Or Greater Than 1.00 ZAR")
+    @NotNull(message = "Amount is required.")
+    @DecimalMin(value = "1.00", message = "Minimum amount is R1.00")
     private Double amount;
 }
