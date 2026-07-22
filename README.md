@@ -1,132 +1,234 @@
-# TransactGuard - Banking Fraud Detection System (Backend)
+# TransactGuard Backend
 
-A secure REST API for a banking simulation system with integrated fraud detection, JWT authentication, and role-based access control.
+![Java](https://img.shields.io/badge/Java-21-007396?logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?logo=springboot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-JWT-6DB33F?logo=springsecurity&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Completed-success)
+
+A secure REST API for **TransactGuard**, a banking simulation platform featuring JWT authentication, role-based access control, transaction management, and automated fraud detection.
+
+---
 
 ## Features
 
-- **User Management** - Registration, login, profile updates with BCrypt password hashing
-- **Transaction System** - Send money between users with balance validation and transaction history
-- **Fraud Detection** - Automated flags for suspicious activity based on:
-  - Large transactions (> R10,000)
-  - High balance drain (> 70% of balance in single transaction)
-  - Rapid transactions (3+ transactions within 1 minute)
-- **Admin Dashboard** - View all flagged transactions and resolve fraud cases
-- **Security** - JWT authentication, Spring Security, CSRF protection, role-based access (@PreAuthorize)
-- **Exception Handling** - Global error responses for validation, runtime, and server errors
+- User registration and authentication
+- JWT-based authorization
+- Role-based access control
+- Profile management
+- Money transfers between users
+- Transaction history
+- Automated fraud detection
+- Fraud flag management for administrators
+- Global exception handling
+- Validation with structured API responses
+
+---
+
+## Fraud Detection Rules
+
+Transactions are automatically flagged when one or more of the following conditions are met:
+
+- Large transactions exceeding **R10,000**
+- Transfers that drain more than **70%** of the sender's balance
+- Three or more transactions performed within **one minute**
+
+Fraud flags are stored separately from transactions, allowing administrators to review and resolve suspicious activity without affecting transaction records.
+
+---
 
 ## Tech Stack
 
-- **Backend**: Java 21, Spring Boot 3.x, Spring Security, Spring Data JPA
-- **Database**: H2 (development), MySQL (production-ready)
-- **Authentication**: JWT (JSON Web Tokens), BCrypt password encoding
-- **Build Tool**: Maven
-- **API Testing**: Postman
+- Java 21
+- Spring Boot 3.x
+- Spring Security
+- Spring Data JPA
+- PostgreSQL
+- JWT (JSON Web Tokens)
+- BCrypt Password Encoder
+- Maven
 
-## Setup & Installation
+---
+
+## Architecture
+
+The application follows a layered architecture consisting of Controllers, Services, Repositories, DTOs, and Entities.
+
+Authentication is handled using JWT through Spring Security before protected endpoints are accessed. Business rules are implemented within the service layer, while Spring Data JPA manages persistence. Fraud detection executes during transaction processing, allowing suspicious activity to be flagged automatically without interrupting legitimate transactions.
+
+---
+
+## Project Structure
+
+```text
+src/main/java/com/transactguard/
+├── config/
+├── controller/
+├── dto/
+├── entity/
+├── exception/
+├── repo/
+├── security/
+└── service/
+```
+
+---
+
+## Getting Started
 
 ### Prerequisites
+
 - Java 21+
 - Maven 3.8+
-- MySQL 8.0+ (for production)
+- PostgreSQL
 
-### Clone Repository
+### Clone the repository
+
 ```bash
 git clone https://github.com/Ofentse-Magidela/transactguard.git
 cd transactguard
 ```
 
-### Configure Database
-Edit `application.properties`:
-```properties
-# H2 (default - development)
-spring.datasource.url=jdbc:h2:mem:transactguard
-spring.h2.console.enabled=true
+### Configure the application
 
-# MySQL (production)
-spring.datasource.url=jdbc:mysql://localhost:3306/transactguard
-spring.datasource.username=root
+Create the required environment variables or configure `application.properties`.
+
+```properties
+server.port=8080
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/transactguard
+spring.datasource.username=postgres
 spring.datasource.password=your_password
+
+jwt.secret=your_jwt_secret
 ```
 
-### Build & Run
+### Build the project
+
 ```bash
 mvn clean install
+```
+
+### Run the application
+
+```bash
 mvn spring-boot:run
 ```
 
-Server runs on `http://localhost:8080`
+The API will be available at:
 
-Access H2 Console: `http://localhost:8080/h2-console`
+```
+http://localhost:8080
+```
+
+---
 
 ## API Endpoints
 
 ### Authentication
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - Login, receive JWT token
 
-### User Management
-- `GET /user/{id}` - Get user profile
-- `GET /user/balance/{id}` - Get user balance
-- `PUT /user/{id}` - Update user profile
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/register` | Register a new user |
+| POST | `/auth/login` | Authenticate and receive a JWT |
+
+### User
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/user/{id}` | Retrieve user profile |
+| GET | `/user/balance/{id}` | Retrieve account balance |
+| PUT | `/user/{id}` | Update profile information |
 
 ### Transactions
-- `POST /transact/send` - Send money (requires auth token)
-- `GET /transact/{id}` - Get transaction details
-- `GET /transact/send/history/{id}` - Sender transaction history
-- `GET /transact/received/history/{id}` - Receiver transaction history
 
-### Admin (Requires ADMIN role)
-- `GET /admin/flags` - View all unresolved fraud flags
-- `POST /admin/resolve/{id}` - Resolve fraud flag
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/transact/send` | Transfer money |
+| GET | `/transact/{id}` | Retrieve transaction |
+| GET | `/transact/send/history/{id}` | Sent transaction history |
+| GET | `/transact/received/history/{id}` | Received transaction history |
+
+### Administration
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/flags` | View unresolved fraud flags |
+| POST | `/admin/resolve/{id}` | Resolve a fraud flag |
+
+---
 
 ## Authentication
 
-Include JWT token in request headers:
-```
-Authorization: Bearer <your_jwt_token>
-```
-
-## Project Structure
+Protected endpoints require a valid JWT.
 
 ```
-src/main/java/com/transactguard/
-├── entity/          # JPA entities (User, Transaction, FraudFlag)
-├── repo/            # Spring Data repositories
-├── service/         # Business logic (UserService, TransactionService, FraudService, AdminService)
-├── controller/      # REST endpoints
-├── dto/             # Data Transfer Objects
-├── security/        # JWT, Spring Security config
-├── exception/       # Global exception handling
-└── config/          # Application configuration
+Authorization: Bearer <jwt_token>
 ```
+
+---
 
 ## Key Design Decisions
 
-- **JWT Over Sessions**: Stateless authentication for scalability
-- **@Transactional on sendMoney**: Ensures atomicity - both balance updates succeed or both fail
-- **FraudFlag as separate entity**: One transaction can have multiple fraud reasons
-- **Role-based access**: ADMIN and USER roles enforced with @PreAuthorize
-- **Exception Handling**: Centralized @RestControllerAdvice catches all errors
+- Stateless authentication using JWT
+- Password hashing with BCrypt
+- Transaction processing wrapped in `@Transactional` to ensure atomicity
+- Fraud flags stored independently from transactions to support multiple fraud reasons per transaction
+- Role-based authorization using `@PreAuthorize`
+- Centralized exception handling with `@RestControllerAdvice`
+
+---
 
 ## Testing
 
-Use Postman to test endpoints:
+The API has been manually tested using Postman.
+
+Typical workflow:
+
 1. Register a user
-2. Login to get JWT token
-3. Use token to call protected endpoints
-4. Trigger fraud flags by sending large amounts or rapid transactions
-5. Admin login to view and resolve flags
+2. Authenticate to obtain a JWT
+3. Access protected endpoints
+4. Perform transactions
+5. Trigger fraud detection rules
+6. Resolve fraud flags through an administrator account
 
-## Future Improvements
+Automated unit and integration tests are planned for future iterations.
 
-- PostgreSQL migration for production
-- Transaction rollback/reversal feature
-- Advanced fraud ML model
-- Rate limiting on APIs
-- Comprehensive unit/integration tests
-- Swagger API documentation
-- Email notifications for flagged transactions
+---
 
 ## Deployment
 
-Ready for deployment to Railway or Render. Update `application.properties` with production database and environment variables.
+Backend API
+
+https://transactguard-backend.onrender.com
+
+---
+## Frontend
+
+Frontend Repository
+
+https://github.com/Ofentse-Magidela/transactguard-frontend
+
+Live Application
+
+https://transactguard.vercel.app
+
+---
+
+## AI Assistance
+
+AI tools were used to assist with documentation, development productivity, and implementation suggestions. The backend architecture, business logic, authentication, fraud detection workflow, API design, and final implementation were designed, integrated, tested, and reviewed by the author.
+
+---
+
+## Author
+
+**Ofentse Magidela**
+
+GitHub: https://github.com/Ofentse-Magidela
+
+---
+
+## License
+
+This project is intended for educational and portfolio purposes.
