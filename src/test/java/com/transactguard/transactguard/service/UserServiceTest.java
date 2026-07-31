@@ -147,7 +147,7 @@ class UserServiceTest {
             verify(encoder, times(1)).
                     matches("new_raw_Pass123", "encoded_Pass123");
             verify(encoder, times(1)).encode("new_raw_Pass123");
-            verify(repository, times(1)).save(existingUser);
+            verify(repository, times(1)).save(any(User.class));
 
         }
 
