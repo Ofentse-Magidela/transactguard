@@ -49,15 +49,12 @@ public class AuthService {
         user.setEmail(registerUserDTO.getEmail());
         user.setBalance(registerUserDTO.getBalance());
         user.setCreatedAt(LocalDate.now());
-
-        if (user.getRole() == null) user.setRole(Role.USER);
-        else user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
 
         repository.save(user);
     }
 
     public String loginUser(LoginUserDTO loginUserDTO) {
-
 
         Map<String, Object> extraClaims = new HashMap<>();
         try {
