@@ -24,7 +24,7 @@ public class FraudService {
         User user = transaction.getSender();
         Double userBalance = user.getBalance();
 
-        Double amount = Math.abs(transaction.getAmount());
+        double amount = Math.abs(transaction.getAmount());
 
         LocalDateTime oneMinBefore = transaction.getTimestamp().minusMinutes(1);
         List<Transaction> recentTransactions = transactionRepo.findAllBySenderIdAndTimestampAfter(
@@ -32,7 +32,7 @@ public class FraudService {
                 oneMinBefore
         );
         if (amount > 10000.00) checkLargeAmount(transaction);
-        if (userBalance <= 1000 && (transaction.getAmount() / userBalance) * 100 > 70) highBalancedDrain(transaction);
+        if (userBalance <= 1000 && (transaction.getAmount() / userBalance) * 100 > 70) highBalanceDrain(transaction);
         if (recentTransactions.size() >= 3) rapidTransactions(transaction);
     }
 
@@ -46,7 +46,7 @@ public class FraudService {
         fraudRepo.save(fraudFlag);
     }
 
-    private void highBalancedDrain(Transaction transaction) {
+    private void highBalanceDrain(Transaction transaction) {
         FraudFlag fraudFlag = new FraudFlag();
 
         fraudFlag.setTransaction(transaction);
